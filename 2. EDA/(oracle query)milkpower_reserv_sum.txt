@@ -1,0 +1,17 @@
+select reg_date, item_category_STR, item_stage_STR, sum(ITEM_POINT) from (
+SELECT to_char(P.reg_date, 'YYYY-MM-DD') as reg_date
+, (case when R.category_code = '000005' then '명작'
+        when R.category_code = '000004' then '궁'
+        when R.category_code = '000006' then '산양'
+        when R.category_code = '000009' then '특수분유'
+        when R.category_code = '000010' then '센서티브'
+        when R.category_code = '000011' then '본'
+        end) as item_category_STR
+, REGEXP_SUBSTR( (select I.itemname from crm.item I where I.itemcode = R.item_code), '[0-9]',1,1) as item_stage_STR
+, I.ITEM_POINT
+FROM maeili.MP_POINT_MASTER P, maeili.MP_POINT_RESERVE R, MAEILI.MI_ROYAL_ITEM I
+WHERE P.POINT_NO = R.POINT_NO 
+and R.ITEM_CODE = I.ITEM_CODE(+)
+AND R.RESERVE_TYPE IN ('RR01','RR04')
+and P.reg_date > '18/01/01')
+group by reg_date, item_category_STR, item_stage_STR

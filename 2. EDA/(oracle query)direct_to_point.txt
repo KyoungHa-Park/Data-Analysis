@@ -1,0 +1,28 @@
+with 
+    MILKPOWER_RESERVE as (
+        SELECT MP.MEMBER_NO
+        , min(MP.REG_DATE) as first_reserve
+        , max(MP.REG_DATE) as last_reserve
+        , sum(I.ITEM_POINT) as reserve_CAN
+        FROM MAEILI.MP_POINT_MASTER MP ,MAEILI.MP_POINT_RESERVE MR ,MAEILI.MI_ROYAL_ITEM I
+        WHERE MP.POINT_NO = MR.POINT_NO 
+        AND MR.ITEM_CODE = I.ITEM_CODE
+        AND MP.STATUS = '1' -- 17.07.04 Ãß°¡
+        and MP.REG_DATE between sysdate-730 and sysdate-1
+        and mr.reserve_type in ('RR01', 'RR04')
+        group by MP.MEMBER_NO),
+    DIRECT_BUY as (
+        select I.member_no
+        , min(M.YMDD) as FIRST_BUY
+        , max(M.YMDD) as LAST_BUY
+        , count(distinct M.orderno) as FREQUENCY
+        , sum(d.product_price * D.product_qty) as MONETORY
+        from maeil.maeil_ds_delivery M, maeil.MAEIL_DS_DELIVERY_DETAIL D, CRM.MEMBER I
+        where M.ORDERNO = D.ORDERNO
+        and YMDD between sysdate-730 and sysdate-1
+        and I.userid = M.userid
+        group by I.member_no)
+
+select M.*, D.FIRST_BUY, D.LAST_BUY, D.FREQUENCY, D.MONETORY
+from MILKPOWER_RESERVE M, DIRECT_BUY D
+where M.member_no = D.member_no
