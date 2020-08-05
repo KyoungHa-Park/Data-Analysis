@@ -1,0 +1,10 @@
+select C.unfy_mmb_no as MEMBER_NO
+, S.main_item_cd as PRM_PRODUCT_CODE
+, I.item_nm 
+, S.sale_qty as PRODUCT_COUNT
+from  sale_dt S, c_cust C, item I
+where to_date(S.sale_dt) between sysdate-30 and sysdate
+and S.cust_id = C.cust_id 
+and I.item_cd =  S.main_item_cd
+and C.unfy_mmb_no is not null
+and S.cust_id is not null

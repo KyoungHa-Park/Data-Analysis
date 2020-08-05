@@ -1,0 +1,24 @@
+select  M.USERID
+, I.member_no
+, 2020-to_char(C.birthday, 'YYYY') as age
+, (case when C.sex in ('1', '3') then 'M' when C.sex in ('2', '4') then 'F' end) as gender
+, f.family_nm
+, D.PRODUCT_CODE
+, p.prm_product_code
+, P.product_name
+, P.org_price
+, P.price as sale_price
+--, D.PRODUCT_PRICE
+, D.PRODUCT_QTY as PRODUCT_COUNT
+, P.price*D.PRODUCT_QTY as SALE_AMT
+--, M.SEND_AMT
+, to_char(M.YMDD, 'YYYY-MM-DD') as PAY_DATE
+--, to_char(M.YMDD, 'HH24') as PAY_TIME
+from maeil.maeil_ds_delivery M, maeil.MAEIL_DS_DELIVERY_DETAIL D, crm.customer C, crm.member I, maeil.MAEIL_product_ds P, maeil.MAEIL_product_family_new F
+where M.ORDERNO = D.ORDERNO
+and F.family_cd = P.product_family
+and D.product_code = P.product_code(+)
+and I.userid = M.userid
+and M.USERID = C.id(+)
+AND p.product_code not IN ('P00676')
+and  M.YMDD between sysdate-180 and sysdate
