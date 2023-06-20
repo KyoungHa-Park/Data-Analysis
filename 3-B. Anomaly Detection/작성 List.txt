@@ -1,0 +1,18 @@
+/* anormaly detection */ 
+/* 월별 App 루팅+위변조 내용 */
+/* 월별 기프트카드 환불껀 수+금액 */
+
+
+
+
+
+/* 월별 App 루팅+위변조 내용 */
+select reg_dtm, count(*) as "루팅+변조" from (
+select substr(acc_dt,1,6) as reg_dtm
+, app_nm
+, trns_msg
+from ARAP002M
+where (trns_msg like '%루팅%' and trns_msg like '%변조%') 
+--and substr(acc_dt,1,6) between 201907 and 201909
+) group by reg_dtm
+;
