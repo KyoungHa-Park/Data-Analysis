@@ -1,5 +1,0 @@
-select opnn_dv_cd
-, (select code_nm from jt_code where  code_grp_id = 'CM060' and code =  cnsl_sphr_cd) as title_gubun
-, tite
-, replace(CTT, '<br/>', '') as CTT
-from TCH_CUST_OPNN
